@@ -4792,10 +4792,10 @@ netlist_6581_transdefs[] = {
     {env3_lfsrA_bit12_out_inv, env3_0x500E, GND},
     {env3_lfsrA_bit13_out, env3_0x500E, GND},
     {env3_lfsrA_bit14_out_inv, env3_0x500E, GND},
-    {env3_adr_00_out, env3_0x500E, GND},
+    {env3_adr_00_inv, env3_0x500E, GND},
     {env3_adr_01_inv, env3_0x500E, GND},
     {env3_adr_02_inv, env3_0x500E, GND},
-    {env3_adr_03_inv, env3_0x500E, GND},
+    {env3_adr_03_out, env3_0x500E, GND},
 
     {env3_lfsrA_bit00_out_inv, env3_0x0A93, GND},
     {env3_lfsrA_bit01_out_inv, env3_0x0A93, GND},
