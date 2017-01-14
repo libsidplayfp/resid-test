@@ -1,5 +1,6 @@
 AC_INIT([resid-test], [0.1], [], [], [https://github.com/drfiemost/resid-test])
 AC_CONFIG_AUX_DIR([build-aux])
+AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_SRCDIR([src/test.cpp])
 AC_CONFIG_HEADER([src/config.h])
 AM_INIT_AUTOMAKE
@@ -18,6 +19,8 @@ AC_PROG_CXX
 
 dnl Use C++ for tests.
 AC_LANG([C++])
+
+AX_CXX_COMPILE_STDCXX_11([noext], [mandatory])
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_SIZEOF([short])

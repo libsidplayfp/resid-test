@@ -17,6 +17,10 @@
  */
 
 #include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <vector>
 
 #include "resid/sid.h"
 
@@ -26,8 +30,11 @@ extern "C" {
 
 #define DEBUG
 
-void
-writeReg(void *state, unsigned char addr, unsigned char data)
+typedef std::vector< std::vector<unsigned char> > ref_vector_t;
+
+/******************************************/
+
+void writeReg(void *state, unsigned char addr, unsigned char data)
 {
     step(state); // Phi2 low
 
@@ -40,8 +47,7 @@ writeReg(void *state, unsigned char addr, unsigned char data)
     setCs(state, 1);
 }
 
-unsigned char
-readReg(void *state, unsigned char addr)
+unsigned char readReg(void *state, unsigned char addr)
 {
     step(state); // Phi2 low
 
@@ -58,7 +64,8 @@ readReg(void *state, unsigned char addr)
 
 /******************************************/
 
-bool compare(reSID::SID* sid, void *state, unsigned char addr) {
+bool compare(reSID::SID* sid, void *state, unsigned char addr)
+{
     sid->clock();
     unsigned int a = sid->read(addr);
     unsigned int b = readReg(state, addr);
@@ -68,19 +75,69 @@ bool compare(reSID::SID* sid, void *state, unsigned char addr) {
     return a == b;
 }
 
-void clock(reSID::SID* sid, void *state) {
+void clock(reSID::SID* sid, void *state)
+{
     sid->clock();
     step(state);
     step(state);
 }
 
-void write(reSID::SID* sid, void *state, unsigned char addr, unsigned char data) {
+void write(reSID::SID* sid, void *state, unsigned char addr, unsigned char data)
+{
     sid->write(addr, data);
     sid->clock();
     writeReg(state, addr, data);
 }
 
-int main () {
+/******************************************/
+
+/*
+ * Split a file into lines.
+ */
+std::vector<std::string> split(const std::string &s, char delim)
+{
+    std::vector<std::string> elems;
+    std::istringstream ss(s);
+    std::string item;
+    while (std::getline(ss, item, delim))
+    {
+        elems.push_back(item);
+    }
+    return elems;
+}
+
+ref_vector_t readFile(std::string fileName)
+{
+#ifdef DEBUG
+    std::cout << "Reading file: " << fileName << std::endl;
+#endif
+    std::ifstream ifs(fileName.c_str(), std::ifstream::in);
+    std::string line;
+    ref_vector_t result;
+    while (getline(ifs, line).good())
+    {
+        std::vector<std::string> values = split(line, ',');
+        std::vector<unsigned char> newVales;
+        for (auto &val : values)
+        {
+            newVales.push_back(std::stoul(val, nullptr, 16));
+        }
+        result.push_back(newVales);
+    }
+    return result;
+}
+
+/******************************************/
+
+int main(int argc, const char* argv[])
+{
+    if (argc != 2)
+    {
+        std::cout << "Usage " << argv[0] << " <test_file>" << std::endl;
+        return -1;
+    }
+    
+    ref_vector_t data = readFile(argv[1]);
 
     reSID::SID* sid = new reSID::SID();
     void *state = initAndResetChip();
@@ -102,11 +159,16 @@ int main () {
             break;
     }
 
-    std::cout << "-----!" << std::endl;
+    std::cout << "-----" << std::endl;
 
     // Do test
-    write(sid, state, 0x13, 0x33);
-    write(sid, state, 0x12, 0x01);
+    for (auto &d : data)
+    {
+#ifdef DEBUG
+        std::cout << std::hex << "Writing " << (int)d[1] << " to reg " << (int)d[0] << std::endl;
+#endif
+        write(sid, state, d[0], d[1]);
+    }
 
     for (int i=0; i<50000; i++) {
         clock(sid, state);
