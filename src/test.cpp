@@ -30,7 +30,7 @@ extern "C" {
 
 #define DEBUG
 
-typedef std::vector< std::vector<unsigned char> > ref_vector_t;
+typedef std::vector< std::vector<int> > ref_vector_t;
 
 /******************************************/
 
@@ -117,10 +117,22 @@ ref_vector_t readFile(std::string fileName)
     while (getline(ifs, line).good())
     {
         std::vector<std::string> values = split(line, ',');
-        std::vector<unsigned char> newVales;
-        for (auto &val : values)
+        std::vector<int> newVales;
+        if (values[0].compare("cycle") == 0)
         {
-            newVales.push_back(std::stoul(val, nullptr, 16));
+            newVales.push_back(-1);
+            newVales.push_back(std::stoul(values[1]));
+        }
+        else if (values[0].compare("end") == 0)
+        {
+            newVales.push_back(-10);
+        }
+        else
+        {
+            for (auto &val : values)
+            {
+                newVales.push_back(std::stoul(val, nullptr, 16));
+            }
         }
         result.push_back(newVales);
     }
@@ -136,7 +148,7 @@ int main(int argc, const char* argv[])
         std::cout << "Usage " << argv[0] << " <test_file>" << std::endl;
         return -1;
     }
-    
+
     ref_vector_t data = readFile(argv[1]);
 
     reSID::SID* sid = new reSID::SID();
@@ -162,19 +174,34 @@ int main(int argc, const char* argv[])
     std::cout << "-----" << std::endl;
 
     // Do test
+    int cycle = 0;
     for (auto &d : data)
     {
+        if (d[0] == -1)
+        {
+            while (cycle != d[1])
+            {
+                clock(sid, state);
+                bool res = compare(sid, state, 0x1c);
+                if (!res)
+                    std::cout << "Fail!" << std::endl;
+                cycle++;
+#ifdef DEBUG
+        std::cout << std::dec << "cycle " << cycle << std::endl;
+#endif
+            }
+        }
+        else if (d[0] == -10)
+        {
+            break;
+        }
+        else
+        {
 #ifdef DEBUG
         std::cout << std::hex << "Writing " << (int)d[1] << " to reg " << (int)d[0] << std::endl;
 #endif
-        write(sid, state, d[0], d[1]);
-    }
-
-    for (int i=0; i<50000; i++) {
-        clock(sid, state);
-        bool res = compare(sid, state, 0x1c);
-        if (!res)
-            std::cout << "Fail!" << std::endl;
+            write(sid, state, d[0], d[1]);
+        }
     }
 
     delete sid;
