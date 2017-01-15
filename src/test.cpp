@@ -118,8 +118,14 @@ ref_vector_t readFile(std::string fileName)
     {
         std::vector<std::string> values = split(line, ',');
         std::vector<int> newVales;
+        if (values[0][0] == '#')
+        {
+            // skip comments
+            continue;
+        }  
         if (values[0].compare("cycle") == 0)
         {
+            // TODO validate writes must be at least two cycles apart
             newVales.push_back(-1);
             newVales.push_back(std::stoul(values[1]));
         }
@@ -187,7 +193,7 @@ int main(int argc, const char* argv[])
                     std::cout << "Fail!" << std::endl;
                 cycle++;
 #ifdef DEBUG
-        std::cout << std::dec << "cycle " << cycle << std::endl;
+        //std::cout << std::dec << "cycle " << cycle << std::endl;
 #endif
             }
         }
