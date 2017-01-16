@@ -228,10 +228,16 @@ void EnvelopeGenerator::writeCONTROL_REG(reg8 control)
   // envelope counter starts counting up (attack) or down (release).
 
   if (gate != gate_next) {
-    // Gate bit on: Start attack, decay, sustain.
-    // Gate bit off: Start release.
-    next_state = gate_next ? ATTACK : RELEASE;
-    state_pipeline = 2;
+    if (gate_next) {
+      // Gate bit on: Start attack, decay, sustain.
+      next_state = ATTACK;
+      state_pipeline = 2;
+    }
+    else {
+      // Gate bit off: Start release.
+      next_state = RELEASE;
+      state_pipeline = 3;
+    }
 
     gate = gate_next;
   }
