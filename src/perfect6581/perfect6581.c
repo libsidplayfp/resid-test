@@ -289,7 +289,7 @@ step(void *state)
 
     /* invert clock */
     setNode(state, Phi2, clk);
-    recalcNodeList(state);
+    recalcAllNodes(state); 
 
     //debug("Phi2: %s\n", isNodeHigh(state, Phi2) ? "high" : "low");
     //debug("cl_a: %s\n", isNodeHigh(state, cl_a) ? "high" : "low");
@@ -373,7 +373,7 @@ initAndResetChip()
     setNode(state, res, 0);
     setNode(state, Phi2, 1);
 
-    stabilizeChip(state);
+    recalcAllNodes(state); 
 
     /* hold RESET for 10 cycles */
     for (int i = 0; i < 20; i++)
@@ -382,7 +382,7 @@ initAndResetChip()
     debug("... RESET done ...\n");
     /* release RESET */
     setNode(state, res, 1);
-    recalcNodeList(state);
+    recalcAllNodes(state); 
 
     cycle = 0;
 
