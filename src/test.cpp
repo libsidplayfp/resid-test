@@ -30,7 +30,8 @@ extern "C" {
 
 #define DEBUG
 
-typedef std::vector< std::vector<int> > ref_vector_t;
+typedef std::vector<int> data_t;
+typedef std::vector<data_t> data_vector_t;
 
 /******************************************/
 
@@ -106,18 +107,18 @@ std::vector<std::string> split(const std::string &s, char delim)
     return elems;
 }
 
-ref_vector_t readFile(std::string fileName)
+data_vector_t readFile(std::string fileName)
 {
 #ifdef DEBUG
     std::cout << "Reading file: " << fileName << std::endl;
 #endif
     std::ifstream ifs(fileName.c_str(), std::ifstream::in);
     std::string line;
-    ref_vector_t result;
+    data_vector_t result;
     while (getline(ifs, line).good())
     {
         std::vector<std::string> values = split(line, ',');
-        std::vector<int> newVales;
+        data_t newVales;
         if (values[0][0] == '#')
         {
             // skip comments
@@ -155,7 +156,7 @@ int main(int argc, const char* argv[])
         return -1;
     }
 
-    ref_vector_t data = readFile(argv[1]);
+    data_vector_t data = readFile(argv[1]);
 
     reSID::SID* sid = new reSID::SID();
     void *state = initAndResetChip();
