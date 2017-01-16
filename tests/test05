@@ -1,0 +1,13 @@
+# switch to release from attack
+cycle, 0
+0x13, 0x10
+cycle, 2
+0x14, 0xe0
+# gate on
+cycle, 4
+0x12, 0x01
+#gate off
+cycle, 2000
+0x12, 0x00
+cycle, 5000
+end
