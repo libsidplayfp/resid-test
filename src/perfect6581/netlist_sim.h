@@ -8,4 +8,5 @@ BOOL isNodeHigh(state_t *state, nodenum_t nn);
 unsigned int readNodes(state_t *state, int count, nodenum_t *nodelist);
 void writeNodes(state_t *state, int count, nodenum_t *nodelist, int v);
 
-void recalcAllNodes(state_t *state);
+void recalcNodeList(state_t *state);
+void stabilizeChip(state_t *state);
