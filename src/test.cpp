@@ -123,10 +123,10 @@ data_vector_t readFile(std::string fileName)
         {
             // skip comments
             continue;
-        }  
+        }
         if (values[0].compare("cycle") == 0)
         {
-            // TODO validate writes must be at least two cycles apart
+            // TODO validate: writes must be at least two cycles apart
             newVales.push_back(-1);
             newVales.push_back(std::stoul(values[1]));
         }
@@ -134,10 +134,17 @@ data_vector_t readFile(std::string fileName)
         {
             newVales.push_back(-10);
         }
+        if (values[0].compare("check") == 0)
+        {
+            // TODO validate: only read regs allowed
+            newVales.push_back(-20);
+            newVales.push_back(std::stoul(values[1], nullptr, 16));
+        }
         else
         {
             for (auto &val : values)
             {
+                // TODO validate: check range
                 newVales.push_back(std::stoul(val, nullptr, 16));
             }
         }
@@ -161,6 +168,7 @@ int main(int argc, const char* argv[])
     reSID::SID* sid = new reSID::SID();
     void *state = initAndResetChip();
 #ifdef DEBUG
+    compare(sid, state, 0x1b);
     compare(sid, state, 0x1c);
 #endif
     for (;;)
@@ -181,6 +189,7 @@ int main(int argc, const char* argv[])
     std::cout << "-----" << std::endl;
 
     // Do test
+    unsigned char reg = 0x1c; // check ENV3 by default
     int cycle = 0;
     for (auto &d : data)
     {
@@ -189,7 +198,7 @@ int main(int argc, const char* argv[])
             while (cycle != d[1])
             {
                 clock(sid, state);
-                bool res = compare(sid, state, 0x1c);
+                bool res = compare(sid, state, reg);
                 if (!res)
                     std::cout << "Fail!" << std::endl;
                 cycle++;
@@ -202,10 +211,17 @@ int main(int argc, const char* argv[])
         {
             break;
         }
+        else if (d[0] == -20)
+        {
+#ifdef DEBUG
+        std::cout << std::hex << "Checking reg $" << (int)d[1] << std::endl;
+#endif
+            reg = d[1];
+        }
         else
         {
 #ifdef DEBUG
-        std::cout << std::hex << "Writing " << (int)d[1] << " to reg " << (int)d[0] << std::endl;
+        std::cout << std::hex << "Writing $" << (int)d[1] << " to reg $" << (int)d[0] << std::endl;
 #endif
             write(sid, state, d[0], d[1]);
         }
