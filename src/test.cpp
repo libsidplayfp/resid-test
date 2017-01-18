@@ -102,6 +102,9 @@ std::vector<std::string> split(const std::string &s, char delim)
     std::string item;
     while (std::getline(ss, item, delim))
     {
+        size_t end = item.find_last_not_of(" \n\r\t");
+        if (end != std::string::npos)
+            item.erase(end+1);
         elems.push_back(item);
     }
     return elems;
@@ -134,7 +137,7 @@ data_vector_t readFile(std::string fileName)
         {
             newVales.push_back(-10);
         }
-        if (values[0].compare("check") == 0)
+        else if (values[0].compare("check") == 0)
         {
             // TODO validate: only read regs allowed
             newVales.push_back(-20);
@@ -164,6 +167,12 @@ int main(int argc, const char* argv[])
     }
 
     data_vector_t data = readFile(argv[1]);
+    if (data.empty())
+    {
+        std::cout << "Empty test_file!" << std::endl;
+        return -1;
+    }
+        
 
     reSID::SID* sid = new reSID::SID();
     void *state = initAndResetChip();
