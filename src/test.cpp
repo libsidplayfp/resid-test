@@ -85,8 +85,8 @@ void clock(reSID::SID* sid, void *state)
 
 void write(reSID::SID* sid, void *state, unsigned char addr, unsigned char data)
 {
-    sid->write(addr, data);
     sid->clock();
+    sid->write(addr, data);
     writeReg(state, addr, data);
 }
 
