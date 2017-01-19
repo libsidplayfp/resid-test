@@ -6,17 +6,12 @@ AUTOMAKE_OPTIONS = foreign subdir-objects
 
 if MINGW32
   W32_CPPFLAGS = -DWIN32_LEAN_AND_MEAN
-  W32_LDFLAGS = -no-undefined
 endif
 
 
 AM_CPPFLAGS = -I $(top_srcdir)/src \
 -I $(top_builddir)/src/resid \
-${W32_CPPFLAGS} \
-@debug_flags@ \
--DVERSION=\"1.0-pre2\"
-
-AM_CFLAGS = -std=c99
+${W32_CPPFLAGS}
 
 #=========================================================
 EXTRA_DIST = \
@@ -38,7 +33,11 @@ $(noinst_SCRIPTS)
 #=========================================================
 # resid
 
-resid_SOURCES = \
+src_libresid_a_CPPFLAGS = \
+-DVERSION=\"1.0-pre2\" \
+$(AM_CPPFLAGS)
+
+src_libresid_a_SOURCES = \
 src/resid/dac.h \
 src/resid/sid.h \
 src/resid/voice.h \
@@ -78,7 +77,9 @@ noinst_SCRIPTS = src/resid/samp2src.pl
 #=========================================================
 # perfect6581
 
-perfect6581_SOURCES = \
+src_libperfect6581_a_CFLAGS = -std=c99
+
+src_libperfect6581_a_SOURCES = \
 src/perfect6581/netlist_6581.h \
 src/perfect6581/netlist_sim.c \
 src/perfect6581/netlist_sim.h \
@@ -88,11 +89,20 @@ src/perfect6581/types.h
 
 #=========================================================
 
+noinst_LIBRARIES = \
+src/libresid.a \
+src/libperfect6581.a
+
 bin_PROGRAMS = \
 src/testresid
 
 src_testresid_SOURCES = \
-$(resid_SOURCES) \
-$(perfect6581_SOURCES) \
 src/test.cpp
 
+src_testresid_LDFLAGS =  \
+@debug_flags@ \
+$(AM_CPPFLAGS)
+
+src_testresid_LDADD = \
+src/libresid.a \
+src/libperfect6581.a
