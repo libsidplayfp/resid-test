@@ -97,7 +97,16 @@ bin_PROGRAMS = \
 src/testresid
 
 src_testresid_SOURCES = \
-src/test.cpp
+src/perfect6581Wrapper.cpp \
+src/perfect6581Wrapper.h \
+src/residWrapper.cpp \
+src/residWrapper.h \
+src/test.cpp \
+src/testBench.cpp \
+src/testBench.h \
+src/testParser.cpp \
+src/testParser.h \
+src/wrapper.h
 
 src_testresid_LDFLAGS =  \
 @debug_flags@ \

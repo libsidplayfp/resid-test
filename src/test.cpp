@@ -16,147 +16,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+#include "testBench.h"
+#include "testParser.h"
+
 #include <iostream>
-#include <fstream>
-#include <sstream>
-#include <string>
-#include <vector>
-
-#include "resid/sid.h"
-
-extern "C" {
-#include "perfect6581/perfect6581.h"
-}
-
-#define DEBUG
-
-typedef std::vector<int> data_t;
-typedef std::vector<data_t> data_vector_t;
-
-/******************************************/
-
-void writeReg(void *state, unsigned char addr, unsigned char data)
-{
-    step(state); // Phi2 low
-
-    setCs(state, 0);
-    setRw(state, 0);
-    writeAddress(state, addr);
-    writeData(state, data);
-
-    step(state); // Phi2 high
-    setCs(state, 1);
-}
-
-unsigned char readReg(void *state, unsigned char addr)
-{
-    step(state); // Phi2 low
-
-    setCs(state, 0);
-    setRw(state, 1);
-    writeAddress(state, addr);
-
-    step(state); // Phi2 high
-    unsigned char data = readData(state);
-
-    setCs(state, 1);
-    return data;
-}
-
-/******************************************/
-
-bool compare(reSID::SID* sid, void *state, unsigned char addr)
-{
-    sid->clock();
-    unsigned int a = sid->read(addr);
-    unsigned int b = readReg(state, addr);
-#ifdef DEBUG
-    std::cout << std::hex << a << " - " << b << std::endl;
-#endif
-    return a == b;
-}
-
-void clock(reSID::SID* sid, void *state)
-{
-    sid->clock();
-    step(state);
-    step(state);
-}
-
-void write(reSID::SID* sid, void *state, unsigned char addr, unsigned char data)
-{
-    sid->clock();
-    sid->write(addr, data);
-    writeReg(state, addr, data);
-}
-
-/******************************************/
-
-/*
- * Split a file into lines.
- */
-std::vector<std::string> split(const std::string &s, char delim)
-{
-    std::vector<std::string> elems;
-    std::istringstream ss(s);
-    std::string item;
-    while (std::getline(ss, item, delim))
-    {
-        size_t end = item.find_last_not_of(" \n\r\t");
-        if (end != std::string::npos)
-            item.erase(end+1);
-        elems.push_back(item);
-    }
-    return elems;
-}
-
-data_vector_t readFile(std::string fileName)
-{
-#ifdef DEBUG
-    std::cout << "Reading file: " << fileName << std::endl;
-#endif
-    std::ifstream ifs(fileName.c_str(), std::ifstream::in);
-    std::string line;
-    data_vector_t result;
-    while (getline(ifs, line).good())
-    {
-        std::vector<std::string> values = split(line, ',');
-        data_t newVales;
-        if (values[0][0] == '#')
-        {
-            // skip comments
-            continue;
-        }
-        if (values[0].compare("cycle") == 0)
-        {
-            // TODO validate: writes must be at least two cycles apart
-            newVales.push_back(-1);
-            newVales.push_back(std::stoul(values[1]));
-        }
-        else if (values[0].compare("end") == 0)
-        {
-            newVales.push_back(-10);
-        }
-        else if (values[0].compare("check") == 0)
-        {
-            // TODO validate: only read regs allowed
-            newVales.push_back(-20);
-            newVales.push_back(std::stoul(values[1], nullptr, 16));
-        }
-        else
-        {
-            for (auto &val : values)
-            {
-                // TODO validate: check range
-                newVales.push_back(std::stoul(val, nullptr, 16));
-            }
-        }
-        result.push_back(newVales);
-    }
-    return result;
-}
-
-/******************************************/
 
 int main(int argc, const char* argv[])
 {
@@ -166,34 +29,18 @@ int main(int argc, const char* argv[])
         return -1;
     }
 
-    data_vector_t data = readFile(argv[1]);
+#ifdef DEBUG
+    std::cout << "Reading file: " << argv[1] << std::endl;
+#endif
+
+    testParser::data_vector_t data = testParser::readFile(argv[1]);
     if (data.empty())
     {
         std::cout << "Empty test_file!" << std::endl;
         return -1;
     }
-        
 
-    reSID::SID* sid = new reSID::SID();
-    void *state = initAndResetChip();
-#ifdef DEBUG
-    compare(sid, state, 0x1b);
-    compare(sid, state, 0x1c);
-#endif
-    for (;;)
-    {
-        sid->clock();
-        unsigned char a = sid->read(0x1C);
-        if (a == 0x00)
-            break;
-    }
-
-    for (;;)
-    {
-        unsigned char a = readReg(state, 0x1C);
-        if (a == 0x00)
-            break;
-    }
+    testBench test;
 
     std::cout << "-----" << std::endl;
 
@@ -202,39 +49,36 @@ int main(int argc, const char* argv[])
     int cycle = 0;
     for (auto &d : data)
     {
-        if (d[0] == -1)
+        if (d[0] == testParser::cycle)
         {
             while (cycle != d[1])
             {
-                clock(sid, state);
-                bool res = compare(sid, state, reg);
-                if (!res)
+                test.clock();
+                if (!test.compare(reg))
                     std::cout << "Fail!" << std::endl;
                 cycle++;
-#ifdef DEBUG
-        //std::cout << std::dec << "cycle " << cycle << std::endl;
+#if DEBUG > 1
+                std::cout << std::dec << "cycle " << cycle << std::endl;
 #endif
             }
         }
-        else if (d[0] == -10)
+        else if (d[0] == testParser::end)
         {
             break;
         }
-        else if (d[0] == -20)
+        else if (d[0] == testParser::check)
         {
 #ifdef DEBUG
-        std::cout << std::hex << "Checking reg $" << (int)d[1] << std::endl;
+            std::cout << std::hex << "Checking reg $" << (int)d[1] << std::endl;
 #endif
             reg = d[1];
         }
         else
         {
 #ifdef DEBUG
-        std::cout << std::hex << "Writing $" << (int)d[1] << " to reg $" << (int)d[0] << std::endl;
+            std::cout << std::hex << "Writing $" << (int)d[1] << " to reg $" << (int)d[0] << std::endl;
 #endif
-            write(sid, state, d[0], d[1]);
+            test.write(d[0], d[1]);
         }
     }
-
-    delete sid;
 }
