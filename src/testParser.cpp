@@ -53,6 +53,9 @@ data_vector_t readFile(std::string fileName)
     while (getline(ifs, line).good())
     {
         std::vector<std::string> values = split(line, ',');
+        if (values.empty())
+            continue;
+
         data_t newVales;
         if (values[0][0] == '#')
         {
@@ -77,6 +80,9 @@ data_vector_t readFile(std::string fileName)
         }
         else
         {
+            if (values.size() != 2)
+                continue;
+
             for (auto &val : values)
             {
                 // TODO validate: check range

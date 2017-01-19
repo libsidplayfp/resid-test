@@ -37,48 +37,13 @@ int main(int argc, const char* argv[])
     if (data.empty())
     {
         std::cout << "Empty test_file!" << std::endl;
-        return -1;
+        return -2;
     }
 
     testBench test;
-
+#ifdef DEBUG
     std::cout << "-----" << std::endl;
-
-    // Do test
-    unsigned char reg = 0x1c; // check ENV3 by default
-    int cycle = 0;
-    for (auto &d : data)
-    {
-        if (d[0] == testParser::cycle)
-        {
-            while (cycle != d[1])
-            {
-                test.clock();
-                if (!test.compare(reg))
-                    std::cout << "Fail!" << std::endl;
-                cycle++;
-#if DEBUG > 1
-                std::cout << std::dec << "cycle " << cycle << std::endl;
 #endif
-            }
-        }
-        else if (d[0] == testParser::end)
-        {
-            break;
-        }
-        else if (d[0] == testParser::check)
-        {
-#ifdef DEBUG
-            std::cout << std::hex << "Checking reg $" << (int)d[1] << std::endl;
-#endif
-            reg = d[1];
-        }
-        else
-        {
-#ifdef DEBUG
-            std::cout << std::hex << "Writing $" << (int)d[1] << " to reg $" << (int)d[0] << std::endl;
-#endif
-            test.write(d[0], d[1]);
-        }
-    }
+    if (!test.execute(data))
+        return -10;
 }

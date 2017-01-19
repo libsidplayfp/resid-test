@@ -18,9 +18,7 @@
 
 #include "testBench.h"
 
-#ifdef DEBUG
-#  include <iostream>
-#endif
+#include <iostream>
 
 testBench::testBench()
 {
@@ -66,4 +64,47 @@ bool testBench::compare(unsigned char addr)
     std::cout << std::hex << a << " - " << b << std::endl;
 #endif
     return a == b;
+}
+
+bool testBench::execute(testParser::data_vector_t data)
+{
+    unsigned char reg = 0x1c; // check ENV3 by default
+    int cycle = 0;
+    for (auto &d : data)
+    {
+        if (d[0] == testParser::cycle)
+        {
+            while (cycle != d[1])
+            {
+                clock();
+                if (!compare(reg))
+                {
+                    std::cout << "Failed at cycle " << cycle << std::endl;
+                    return false;
+                }
+                cycle++;
+#if DEBUG > 1
+                std::cout << std::dec << "cycle " << cycle << std::endl;
+#endif
+            }
+        }
+        else if (d[0] == testParser::check)
+        {
+#ifdef DEBUG
+            std::cout << std::hex << "Checking reg $" << (int)d[1] << std::endl;
+#endif
+            reg = d[1];
+        }
+        else if (d[0] == testParser::end)
+        {
+            return true;
+        }
+        else
+        {
+#ifdef DEBUG
+            std::cout << std::hex << "Writing $" << (int)d[1] << " to reg $" << (int)d[0] << std::endl;
+#endif
+            write(d[0], d[1]);
+        }
+    }
 }

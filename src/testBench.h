@@ -19,6 +19,8 @@
 #ifndef TESTBENCH_H
 #define TESTBENCH_H
 
+#include "testParser.h"
+
 #include "residWrapper.h"
 #include "perfect6581Wrapper.h"
  
@@ -28,12 +30,15 @@ private:
     residWrapper sid;
     perfect6581Wrapper perfect6581;
 
-public:
-    testBench();
-
+private:
     void clock();
     void write(unsigned char addr, unsigned char data);
     bool compare(unsigned char addr);
- };
- 
+
+public:
+    testBench();
+
+    bool execute(testParser::data_vector_t data);
+};
+
  #endif
