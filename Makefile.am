@@ -108,7 +108,7 @@ src/testParser.cpp \
 src/testParser.h \
 src/wrapper.h
 
-src_testresid_LDFLAGS =  \
+src_testresid_CPPFLAGS =  \
 @debug_flags@ \
 $(AM_CPPFLAGS)
 
