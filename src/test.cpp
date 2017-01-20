@@ -33,7 +33,7 @@ int main(int argc, const char* argv[])
     std::cout << "Reading file: " << argv[1] << std::endl;
 #endif
 
-    testParser::data_vector_t data = testParser::readFile(argv[1]);
+    testBench::data_vector_t data = testParser::readFile(argv[1]);
     if (data.empty())
     {
         std::cout << "Empty test_file!" << std::endl;

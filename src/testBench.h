@@ -19,13 +19,30 @@
 #ifndef TESTBENCH_H
 #define TESTBENCH_H
 
-#include "testParser.h"
-
 #include "residWrapper.h"
 #include "perfect6581Wrapper.h"
- 
+
+#include <vector>
+
 class testBench
 {
+public:
+    enum class tag
+    {
+        write,
+        check,
+        cycle,
+        end       
+    };
+
+    typedef struct
+    {
+        tag operation;
+        int param1;
+        int param2;
+    } data_t;
+    typedef std::vector<data_t> data_vector_t;
+
 private:
     residWrapper sid;
     perfect6581Wrapper perfect6581;
@@ -38,7 +55,7 @@ private:
 public:
     testBench();
 
-    bool execute(testParser::data_vector_t data);
+    bool execute(data_vector_t data);
 };
 
  #endif

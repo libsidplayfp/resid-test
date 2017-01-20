@@ -66,15 +66,16 @@ bool testBench::compare(unsigned char addr)
     return a == b;
 }
 
-bool testBench::execute(testParser::data_vector_t data)
+bool testBench::execute(data_vector_t data)
 {
     unsigned char reg = 0x1c; // check ENV3 by default
     int cycle = 0;
     for (auto &d : data)
     {
-        if (d[0] == testParser::cycle)
+        switch (d.operation)
         {
-            while (cycle != d[1])
+        case tag::cycle:
+            while (cycle != d.param1)
             {
                 clock();
                 if (!compare(reg))
@@ -87,24 +88,21 @@ bool testBench::execute(testParser::data_vector_t data)
                 std::cout << std::dec << "cycle " << cycle << std::endl;
 #endif
             }
-        }
-        else if (d[0] == testParser::check)
-        {
+            break;
+        case tag::check:
 #ifdef DEBUG
-            std::cout << std::hex << "Checking reg $" << (int)d[1] << std::endl;
+            std::cout << std::hex << "Checking reg $" << d.param1 << std::endl;
 #endif
-            reg = d[1];
-        }
-        else if (d[0] == testParser::end)
-        {
+            reg = d.param1;
+            break;
+        case tag::write:
+#ifdef DEBUG
+            std::cout << std::hex << "Writing $" << d.param2 << " to reg $" << d.param1 << std::endl;
+#endif
+            write(d.param1, d.param2);
+            break;
+        case tag::end:
             return true;
-        }
-        else
-        {
-#ifdef DEBUG
-            std::cout << std::hex << "Writing $" << (int)d[1] << " to reg $" << (int)d[0] << std::endl;
-#endif
-            write(d[0], d[1]);
         }
     }
 }

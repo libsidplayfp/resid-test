@@ -20,21 +20,12 @@
 #define TESTPARSER_H
 
 #include <string>
-#include <vector>
+
+#include "testBench.h"
 
 namespace testParser
 {
-    enum tags
-    {
-        check = -10,
-        cycle = -20,
-        end   = -30,        
-    };
-
-    typedef std::vector<int> data_t;
-    typedef std::vector<data_t> data_vector_t;
-
-    data_vector_t readFile(std::string fileName);
+    testBench::data_vector_t readFile(std::string fileName);
 };
 
 #endif
