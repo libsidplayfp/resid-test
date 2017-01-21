@@ -31,7 +31,7 @@ public:
     {
         write,
         check,
-        cycle,
+        run,
         end       
     };
 
@@ -58,4 +58,4 @@ public:
     bool execute(data_vector_t data);
 };
 
- #endif
+#endif

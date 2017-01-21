@@ -74,10 +74,11 @@ bool testBench::execute(data_vector_t data)
     {
         switch (d.operation)
         {
-        case tag::cycle:
-            while (cycle != d.param1)
+        case tag::run:
+            for (int i=0; i<d.param1; i++)
             {
                 clock();
+                cycle++;
                 if (!compare(reg))
                 {
                     std::cout << "Failed at cycle " << cycle << std::endl;
@@ -100,6 +101,7 @@ bool testBench::execute(data_vector_t data)
             std::cout << std::hex << "Writing $" << d.param2 << " to reg $" << d.param1 << std::endl;
 #endif
             write(d.param1, d.param2);
+            cycle++;
             break;
         case tag::end:
             return true;

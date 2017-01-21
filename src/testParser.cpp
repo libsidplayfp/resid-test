@@ -60,9 +60,9 @@ testBench::data_vector_t readFile(std::string fileName)
         }
 
         testBench::data_t newVales;
-        if (values[0].compare("cycle") == 0)
+        if (values[0].compare("run") == 0)
         {
-            newVales.operation = testBench::tag::cycle;
+            newVales.operation = testBench::tag::run;
             newVales.param1 = std::stoul(values[1]);
         }
         else if (values[0].compare("end") == 0)
@@ -71,22 +71,22 @@ testBench::data_vector_t readFile(std::string fileName)
         }
         else if (values[0].compare("check") == 0)
         {
-            if (values.size() != 1)
+            if (values.size() != 2)
                 continue;
 
             newVales.operation = testBench::tag::check;
             // TODO validate: only read regs allowed
             newVales.param1 = std::stoul(values[1], nullptr, 16);
         }
-        else
+        else  if (values[0].compare("write") == 0)
         {
-            if (values.size() != 2)
+            if (values.size() != 3)
                 continue;
 
             newVales.operation = testBench::tag::write;
             // TODO validate: check range
-            newVales.param1 = std::stoul(values[0], nullptr, 16);
-            newVales.param2 = std::stoul(values[1], nullptr, 16);
+            newVales.param1 = std::stoul(values[1], nullptr, 16);
+            newVales.param2 = std::stoul(values[2], nullptr, 16);
         }
         result.push_back(newVales);
     }
