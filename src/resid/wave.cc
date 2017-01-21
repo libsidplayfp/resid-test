@@ -273,7 +273,11 @@ void WaveformGenerator::reset()
   no_pulse = 0xfff;
   pulse_output = 0xfff;
 
-  reset_shift_register();
+  // Noise register bits are high on powerup and,
+  // assuming the signal is held for enough time,
+  // will become high on reset too.
+  // The register will be then shifted once on reset release.
+  shift_register = 0x7ffffe;
   shift_pipeline = 0;
 
   waveform_output = 0;
