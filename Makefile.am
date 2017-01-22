@@ -79,6 +79,10 @@ noinst_SCRIPTS = src/resid/samp2src.pl
 
 src_libperfect6581_a_CFLAGS = -std=c99
 
+if USE_MOS8580
+src_libperfect6581_a_CPPFLAGS = -DMOS8580
+endif
+
 src_libperfect6581_a_SOURCES = \
 src/perfect6581/netlist_6581.h \
 src/perfect6581/netlist_sim.c \

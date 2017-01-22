@@ -18,11 +18,18 @@
  
 #include "residWrapper.h"
 
+#ifdef HAVE_CONFIG_H
+#  include "config.h"
+#endif
+
 #include "resid/sid.h"
 
 residWrapper::residWrapper()
 {
     sid = new reSID::SID();
+#ifdef ENABLE_MOS8580
+    sid->set_chip_model(reSID::MOS8580);
+#endif
 }
 
 residWrapper::~residWrapper()

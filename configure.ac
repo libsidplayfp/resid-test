@@ -116,6 +116,15 @@ AC_SUBST(RESID_INLINING)
 AC_SUBST(RESID_INLINE)
 
 
+AC_ARG_ENABLE([mos8580], [AS_HELP_STRING([--enable-mos8580], [test new SID model])])
+
+if [ test "x$enable_mos8580" = xyes ]; then
+        AC_DEFINE([ENABLE_MOS8580], 1, [Define to 1 if you want to test new SID model.])
+fi
+
+AM_CONDITIONAL([USE_MOS8580], [ test "x$enable_mos8580" = xyes ])
+
+
 AC_CONFIG_FILES([
 Makefile
 src/resid/siddefs.h
