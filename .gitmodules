@@ -1,0 +1,4 @@
+[submodule "src/resid"]
+	path = src/resid
+	url = https://github.com/drfiemost/resid.git
+	branch = experimental
