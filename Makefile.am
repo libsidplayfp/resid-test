@@ -11,6 +11,7 @@ endif
 
 AM_CPPFLAGS = -I $(top_srcdir)/src \
 -I $(top_builddir)/src/resid \
+-I $(top_builddir)/src/residfp \
 ${W32_CPPFLAGS}
 
 #=========================================================
@@ -26,6 +27,9 @@ src/resid/README \
 src/resid/README.VICE \
 src/resid/THANKS \
 src/resid/TODO \
+src/residfp/AUTHORS \
+src/residfp/COPYING \
+src/residfp/README \
 src/perfect6581/README \
 $(noinst_DATA) \
 $(noinst_SCRIPTS)
@@ -75,6 +79,53 @@ noinst_SCRIPTS = src/resid/samp2src.pl
 	$(PERL) $(srcdir)/src/resid/samp2src.pl $* $< $@
 
 #=========================================================
+# residfp
+
+src_libresidfp_a_CPPFLAGS = \
+$(AM_CPPFLAGS)
+
+src_libresidfp_a_SOURCES = \
+src/residfp/array.h \
+src/residfp/Dac.cpp \
+src/residfp/Dac.h \
+src/residfp/EnvelopeGenerator.cpp \
+src/residfp/EnvelopeGenerator.h \
+src/residfp/ExternalFilter.cpp \
+src/residfp/ExternalFilter.h \
+src/residfp/Filter.cpp \
+src/residfp/Filter.h \
+src/residfp/Filter6581.cpp \
+src/residfp/Filter6581.h \
+src/residfp/Filter8580.cpp \
+src/residfp/Filter8580.h \
+src/residfp/FilterModelConfig.cpp \
+src/residfp/FilterModelConfig.h \
+src/residfp/FilterModelConfig8580.cpp \
+src/residfp/FilterModelConfig8580.h \
+src/residfp/Integrator.cpp \
+src/residfp/Integrator.h \
+src/residfp/Integrator8580.cpp \
+src/residfp/Integrator8580.h \
+src/residfp/OpAmp.cpp \
+src/residfp/OpAmp.h \
+src/residfp/Potentiometer.h \
+src/residfp/SID.cpp \
+src/residfp/SID.h \
+src/residfp/Spline.cpp \
+src/residfp/Spline.h \
+src/residfp/version.cc \
+src/residfp/Voice.h \
+src/residfp/WaveformCalculator.cpp \
+src/residfp/WaveformCalculator.h \
+src/residfp/WaveformGenerator.cpp \
+src/residfp/WaveformGenerator.h \
+src/residfp/resample/Resampler.h \
+src/residfp/resample/SincResampler.cpp \
+src/residfp/resample/SincResampler.h \
+src/residfp/resample/TwoPassSincResampler.h \
+src/residfp/resample/ZeroOrderResampler.h
+
+#=========================================================
 # perfect6581
 
 src_libperfect6581_a_CFLAGS = -std=c99
@@ -95,6 +146,7 @@ src/perfect6581/types.h
 
 noinst_LIBRARIES = \
 src/libresid.a \
+src/libresidfp.a \
 src/libperfect6581.a
 
 bin_PROGRAMS = \
@@ -103,6 +155,8 @@ src/testresid
 src_testresid_SOURCES = \
 src/perfect6581Wrapper.cpp \
 src/perfect6581Wrapper.h \
+src/residfpWrapper.cpp \
+src/residfpWrapper.h \
 src/residWrapper.cpp \
 src/residWrapper.h \
 src/test.cpp \
@@ -118,4 +172,5 @@ $(AM_CPPFLAGS)
 
 src_testresid_LDADD = \
 src/libresid.a \
+src/libresidfp.a \
 src/libperfect6581.a

@@ -128,6 +128,7 @@ AM_CONDITIONAL([USE_MOS8580], [ test "x$enable_mos8580" = xyes ])
 AC_CONFIG_FILES([
 Makefile
 src/resid/siddefs.h
+src/residfp/siddefs-fp.h
 ])
 
 AC_OUTPUT
