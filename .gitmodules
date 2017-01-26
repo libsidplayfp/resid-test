@@ -2,3 +2,7 @@
 	path = src/resid
 	url = https://github.com/drfiemost/resid.git
 	branch = experimental
+[submodule "src/residfp"]
+	path = src/residfp
+	url = https://github.com/drfiemost/residfp.git
+	branch = cxx11
