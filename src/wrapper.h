@@ -21,12 +21,12 @@
  
 class wrapper
 {
+public:
     virtual void clock() =0;
     virtual unsigned char read(unsigned char addr) =0;
     virtual void write(unsigned char addr, unsigned char data) =0;
 
-protected:
-    ~wrapper() {}
+    virtual ~wrapper() {}
 };
  
 #endif

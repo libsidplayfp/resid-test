@@ -29,6 +29,8 @@ residWrapper::residWrapper()
     sid = new reSID::SID();
 #ifdef ENABLE_MOS8580
     sid->set_chip_model(reSID::MOS8580);
+#else
+    sid->set_chip_model(reSID::MOS6581);
 #endif
 }
 

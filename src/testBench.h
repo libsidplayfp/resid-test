@@ -19,7 +19,7 @@
 #ifndef TESTBENCH_H
 #define TESTBENCH_H
 
-#include "residWrapper.h"
+#include "wrapper.h"
 #include "perfect6581Wrapper.h"
 
 #include <vector>
@@ -44,7 +44,7 @@ public:
     typedef std::vector<data_t> data_vector_t;
 
 private:
-    residWrapper sid;
+    wrapper *sid;
     perfect6581Wrapper perfect6581;
 
 private:
@@ -53,7 +53,7 @@ private:
     bool compare(unsigned char addr);
 
 public:
-    testBench();
+    testBench(wrapper *sid);
 
     bool execute(data_vector_t data);
 };

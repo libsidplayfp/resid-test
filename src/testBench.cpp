@@ -20,7 +20,8 @@
 
 #include <iostream>
 
-testBench::testBench()
+testBench::testBench(wrapper *sid) :
+    sid(sid)
 {
 #ifdef DEBUG
     compare(0x1b);
@@ -30,7 +31,7 @@ testBench::testBench()
     // stabilize envelope generator
     for (;;)
     {
-        unsigned char const a = sid.read(0x1C);
+        unsigned char const a = sid->read(0x1C);
         if (a == 0x00)
             break;
     }
@@ -44,19 +45,19 @@ testBench::testBench()
 
 void testBench::clock()
 {
-    sid.clock();
+    sid->clock();
     perfect6581.clock();
 }
 
 void testBench::write(unsigned char addr, unsigned char data)
 {
-    sid.write(addr, data);
+    sid->write(addr, data);
     perfect6581.write(addr, data);
 }
 
 bool testBench::compare(unsigned char addr)
 {
-    unsigned int const a = sid.read(addr);
+    unsigned int const a = sid->read(addr);
 
     unsigned int const b = perfect6581.read(addr);
 
