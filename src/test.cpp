@@ -19,31 +19,70 @@
 #include "testBench.h"
 #include "testParser.h"
 
+#include "residfpWrapper.h"
+#include "residWrapper.h"
+
 #include <iostream>
+#include <memory>
+
+void usage(const char* prog)
+{
+    std::cout << "Usage " << prog << " --engine=[resid|residfp] <test_file>" << std::endl;
+}
 
 int main(int argc, const char* argv[])
 {
-    if (argc != 2)
+    if (argc != 3)
     {
-        std::cout << "Usage " << argv[0] << " <test_file>" << std::endl;
+        usage(argv[0]);
         return -1;
     }
 
+    const std::string param(argv[1]);
+
+    size_t pos = param.find_first_of("=");
+    if (param.substr(0, pos).compare("--engine"))
+    {
+        usage(argv[0]);
+        return -1;
+    }
+
+    const std::string file(argv[2]);
+
 #ifdef DEBUG
-    std::cout << "Reading file: " << argv[1] << std::endl;
+    std::cout << "Reading file: " << file << std::endl;
 #endif
 
-    testBench::data_vector_t data = testParser::readFile(argv[1]);
+    testBench::data_vector_t data = testParser::readFile(file);
     if (data.empty())
     {
         std::cout << "Empty test_file!" << std::endl;
         return -2;
     }
 
-    testBench test;
+    std::unique_ptr<wrapper> sidWrapper;
+    std::string engine = param.substr(pos+1);
+    if (engine.compare("residfp") == 0)
+    {
+        sidWrapper.reset(new residfpWrapper());
+    }
+    else if (engine.compare("resid") == 0)
+    {
+        sidWrapper.reset(new residWrapper());
+    }
+    else
+    {
+        usage(argv[0]);
+        return -1;
+    }
+
+    std::cout << "Testing " << engine << " engine" << std::endl;
+
+    testBench test(sidWrapper.get());
 #ifdef DEBUG
     std::cout << "-----" << std::endl;
 #endif
+
     if (!test.execute(data))
         return -10;
 }
