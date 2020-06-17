@@ -1,0 +1,49 @@
+# Test to check for libsidplayfp bug #31
+# check env3
+check, 0x1c
+# AD
+write, 0x13, 0x00
+run, 3
+# SR
+write, 0x14, 0x00
+run, 3
+# Control Reg
+write, 0x12, 0xc7
+run, 3
+run, 20000
+write, 0x12, 0x09
+run, 3
+run, 20000
+write, 0x12, 0x81
+run, 3
+run, 20000
+write, 0x12, 0x14
+run, 3
+run, 20000
+write, 0x12, 0x10
+run, 3
+run, 20000
+# wait
+run, 50000
+# AD
+write, 0x13, 0x10
+run, 3
+# SR
+write, 0x14, 0xf8
+run, 3
+# Control Reg
+write, 0x12, 0x09
+run, 3
+run, 20000
+write, 0x12, 0x81
+run, 3
+run, 20000
+write, 0x12, 0x11
+run, 3
+run, 20000
+write, 0x12, 0x10
+run, 3
+run, 20000
+# wait
+run, 50000
+end
