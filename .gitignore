@@ -24,3 +24,7 @@ Makefile
 *.a
 .deps
 .dirstamp
+*.o
+
+src/config.h
+src/testresid*
