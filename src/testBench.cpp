@@ -82,7 +82,7 @@ bool testBench::execute(data_vector_t data)
                 cycle++;
                 if (!compare(reg))
                 {
-                    std::cout << "Failed at cycle " << cycle << std::endl;
+                    std::cout << std::dec << "Failed at cycle " << cycle << std::endl;
                     return false;
                 }
                 cycle++;
