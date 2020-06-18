@@ -78,6 +78,8 @@ noinst_SCRIPTS = src/resid/samp2src.pl
 .dat.h:
 	$(PERL) $(srcdir)/src/resid/samp2src.pl $* $< $@
 
+BUILT_SOURCES = $(noinst_DATA:.dat=.h)
+
 #=========================================================
 # residfp
 
