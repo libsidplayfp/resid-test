@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017 Leandro Nini
+ * Copyright 2016-2020 Leandro Nini
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -108,4 +108,7 @@ bool testBench::execute(data_vector_t data)
             return true;
         }
     }
+
+    std::cout << "Warning: missing end tag" << std::endl;
+    return false;
 }
