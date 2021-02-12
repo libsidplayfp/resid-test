@@ -379,7 +379,7 @@ initAndResetChip()
     for (int i = 0; i < 20; i++)
         step(state);
 
-    debug("... RESET done ...\n");
+    debug("%s\n", "... RESET done ...\n");
     /* release RESET */
     setNode(state, res, 1);
     recalcNodeList(state); 

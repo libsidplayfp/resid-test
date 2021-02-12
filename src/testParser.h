@@ -26,6 +26,6 @@
 namespace testParser
 {
     testBench::data_vector_t readFile(std::string fileName);
-};
+}
 
 #endif
